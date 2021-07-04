@@ -1,0 +1,51 @@
+name: test
+
+on:
+  push:
+
+env:
+  NODE_VERSION: '14.x'
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Get npm cache directory
+      id: npm-cache-dir
+      run: |
+        echo "::set-output name=dir::$(npm config get cache)"
+
+    - uses: actions/cache@v2
+      id: npm-cache
+      with:
+        path: ${{ steps.npm-cache-dir.outputs.dir }}
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
+            
+    - name: Use Node.js ${{ env.NODE_VERSION }}
+      uses: actions/setup-node@v2
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+
+    - name: NPM install
+      run: npm install
+
+    - name: NPM build
+      run: npm run build
+      
+    - name: NPM run test
+      run: npm run test
+
+    - name: Upload test evidences
+      uses: actions/upload-artifact@v2
+      with:
+        name: evidences
+        path: test/evidences
+
+#    - name: Trigger netlify deploy
+#      run: curl -X POST -d {} https://api.netlify.com/build_hooks/${{ secrets.NETLIFY_BUILD_HOOK }}
