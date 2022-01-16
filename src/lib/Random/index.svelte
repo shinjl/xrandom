@@ -49,7 +49,7 @@
 		background-color: transparent;
 		color: var(--text-color);
 		font-size: 2rem;
-		border-radius: 0;
+		border-radius: 50%;
 		margin-left: 3rem;
 		cursor: pointer;
 	}
